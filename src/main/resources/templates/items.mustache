@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Items</title>
+
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        a {
+            color: #337ab7;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        p {
+            margin-bottom: 16px;
+        }
+
+        a.back-link {
+            display: block;
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <table id="table">
+            <tr>
+                <th>id</th>
+                <th>name</th>
+                <th>price</th>
+            </tr>
+            {{#items}}
+                <tr>
+                    <td>{{id}}</td>
+                    <td><a href="/items/{{id}}">{{name}}</a></td>
+                    <td>${{price}} USD</td>
+                </tr>
+            {{/items}}
+        </table>
+    </div>
+
+</body>
+<script>
+
+    const WS_URL = "ws://localhost:8080/ws/bid";
+
+    let socket;
+    function initWebSocket() {
+        socket = new WebSocket(WS_URL);
+
+        socket.onopen = () => {
+            console.log("Conectado al servidor WebSocket");
+        };
+
+        socket.onerror = (error) => {
+            console.log("error al conectar con el web socket");
+        }
+
+        socket.onmessage = (event) => {
+            const MSG = JSON.parse(event.data);
+
+            handler_web_socket_msg(MSG);
+
+            console.log("msg: " + MSG);
+        }
+
+        socket.onclose = () => {
+            console.log("reiniciando web socket");
+            setTimeout(initWebSocket, 3000);
+        }
+    }
+
+    function update_table(data){
+        const TABLE = document.getElementById("table");
+        console.log(data);
+        TABLE.innerHTML += `<tr>
+                    <td>${data.id}</td>
+                    <td><a href="/items/${data.id}">${data.name}</a></td>
+                    <td>$${data.price} USD</td>
+                </tr>`;
+    }
+
+    function handler_web_socket_msg(msg){
+        const {type, data} = msg;
+
+        switch(type){
+            case "new_item":
+                console.log(data);
+                update_table(data.item);
+                break;
+
+            default:
+                console.log("mensaje no encontrado");
+                break;
+        }
+    }
+    document.addEventListener("DOMContentLoaded", initWebSocket);
+
+</script>
+</html>

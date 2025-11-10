@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Post Bid</title>
+</head>
+<body>
+    <form id="toilet">
+        <label for="txt_offer">Offer</label><br>
+        <input type="number" id="txt_offer" name="txt_offer"><br>
+
+        <label for="txt_email">Email</label><br>
+        <input type="email" id="txt_email" name="txt_email"><br>
+
+        <button type="submit" onclick="redirect()">SUBMIT</button>
+
+
+    </form>
+    <script>
+
+        document.getElementById("toilet").addEventListener("click", function(event){
+          event.preventDefault()
+        });
+
+        function redirect()
+        {
+            const OFFER = document.getElementById("txt_offer");
+            const EMAIL = document.getElementById("txt_email");
+            const ITEM_ID = {{item_id}};
+
+            const URL =
+            "/post_bid/" + EMAIL.value +
+            "/" + ITEM_ID +
+            "/" + OFFER.value;
+
+            console.log(URL);
+
+
+            window.location = URL;
+        }
+
+    </script>
+</body>
+
+
+
+</html>
