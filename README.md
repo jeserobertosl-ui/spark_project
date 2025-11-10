@@ -1,0 +1,1 @@
+The project contains a Java application using Spark web framework, it implements GET all, GET by id, PUT, OPTIONS and DELETE routes, the purpose of the repository is to create a web app to sell collectible items
