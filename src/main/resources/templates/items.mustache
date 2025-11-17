@@ -62,18 +62,26 @@
                 <tr>
                     <td>{{id}}</td>
                     <td><a href="/items/{{id}}">{{name}}</a></td>
-                    <td>${{price}} USD</td>
+                    <td>{{price}}</td>
                 </tr>
             {{/items}}
         </table>
+
+        <button onclick="order_by_name()" id="btn_order_by_name">Order By Name</button>
+        <button onclick="order_by_price()" id="btn_order_by_price">Order By Price</button>
+        <button onclick="reset_filters()" id="btn_reset_filters">Reset Filters</button>
     </div>
 
 </body>
+
 <script>
 
     const WS_URL = "ws://localhost:8080/ws/bid";
 
     let socket;
+
+
+
     function initWebSocket() {
         socket = new WebSocket(WS_URL);
 
@@ -90,7 +98,8 @@
 
             handler_web_socket_msg(MSG);
 
-            console.log("msg: " + MSG);
+            console.log("On Message: ");
+            console.log(MSG);
         }
 
         socket.onclose = () => {
@@ -100,13 +109,27 @@
     }
 
     function update_table(data){
-        const TABLE = document.getElementById("table");
-        console.log(data);
-        TABLE.innerHTML += `<tr>
-                    <td>${data.id}</td>
-                    <td><a href="/items/${data.id}">${data.name}</a></td>
-                    <td>$${data.price} USD</td>
-                </tr>`;
+
+        console.log("updated table");
+
+        const table = document.getElementById("table");
+
+        const header = Array.from(table.querySelectorAll("tr"))[0];
+
+        const rows = Array.from(table.querySelectorAll("tr")).slice(1);
+
+        const newRow = table.insertRow(-1);
+
+        const ID = `${data.id}`;
+        const NAME = `${data.name}`;
+        const PRICE = `${data.price}`;
+
+        const rowData = [ID, NAME, PRICE]; // Data for the new row
+
+        rowData.forEach((item, index) => {
+            const newCell = newRow.insertCell(index);
+            newCell.innerHTML = item;
+        });
     }
 
     function handler_web_socket_msg(msg){
@@ -114,7 +137,7 @@
 
         switch(type){
             case "new_item":
-                console.log(data);
+                console.log("Handler Web Socket New Item");
                 update_table(data.item);
                 break;
 
@@ -123,7 +146,73 @@
                 break;
         }
     }
+
+    function order_by_name()
+    {
+        const table = document.getElementById("table");
+
+        const header = Array.from(table.querySelectorAll("tr"))[0];
+
+        const rows = Array.from(table.querySelectorAll("tr")).slice(1);
+
+        rows.sort((a, b) => {
+            const nameA = a.cells[1].innerText.toLowerCase();
+            const nameB = b.cells[1].innerText.toLowerCase();
+            return nameA.localeCompare(nameB);
+        });
+
+        table.innerHTML = "";
+        table.appendChild(header);
+        rows.forEach(row => table.appendChild(row));
+    }
+
+    function order_by_price()
+    {
+        const table = document.getElementById("table");
+
+        const header = Array.from(table.querySelectorAll("tr"))[0];
+
+        const rows = Array.from(table.querySelectorAll("tr")).slice(1);
+
+        for(let i = 0; i < rows.length; i++)
+        {
+            for(let j = 0; j < rows.length; j++)
+            {
+                if(parseFloat(rows[i].cells[2].innerText) > parseFloat(rows[j].cells[2].innerText))
+                {
+                    let temp = rows[i];
+                    rows[i] = rows[j];
+                    rows[j] = temp;
+                }
+            }
+        }
+
+        table.innerHTML = "";
+        table.appendChild(header);
+        rows.forEach(row => table.appendChild(row));
+    }
+
+    function reset_filters()
+    {
+        const table = document.getElementById("table");
+
+        const header = Array.from(table.querySelectorAll("tr"))[0];
+
+        const rows = Array.from(table.querySelectorAll("tr")).slice(1);
+
+        rows.sort((a, b) => {
+            const numberA = a.cells[0].innerText;
+            const numberB = b.cells[0].innerText;
+            return numberA.localeCompare(numberB);
+        });
+
+        table.innerHTML = "";
+        table.appendChild(header);
+        rows.forEach(row => table.appendChild(row));
+    }
+
     document.addEventListener("DOMContentLoaded", initWebSocket);
 
 </script>
+
 </html>

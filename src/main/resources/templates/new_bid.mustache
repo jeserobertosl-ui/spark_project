@@ -17,19 +17,18 @@
 
         <button type="submit" onclick="redirect()">SUBMIT</button>
 
-
     </form>
     <script>
+        let OFFER = document.getElementById("txt_offer");
 
-        document.getElementById("toilet").addEventListener("click", function(event){
-          event.preventDefault()
-        });
+    document.getElementById("toilet").addEventListener("click", function(event){
+      event.preventDefault()
+    });
 
-        function redirect()
-        {
-            const OFFER = document.getElementById("txt_offer");
-            const EMAIL = document.getElementById("txt_email");
-            const ITEM_ID = {{item_id}};
+    function redirect()
+    {
+        const EMAIL = document.getElementById("txt_email");
+        const ITEM_ID = {{item_id}};
 
             const URL =
             "/post_bid/" + EMAIL.value +
@@ -40,6 +39,50 @@
 
 
             window.location = URL;
+        }
+
+        const WS_URL = "ws://localhost:8080/ws/bid";
+
+        let socket;
+
+        function initWebSocket() {
+            socket = new WebSocket(WS_URL);
+
+            socket.onopen = () => {
+                console.log("Conectado al servidor WebSocket");
+            };
+
+            socket.onerror = (error) => {
+                console.log("error al conectar con el web socket");
+            }
+
+            socket.onmessage = (event) => {
+                const MSG = JSON.parse(event.data);
+
+                handler_web_socket_msg(MSG);
+
+                console.log("On Message: ");
+                console.log(MSG);
+            }
+
+            socket.onclose = () => {
+                console.log("reiniciando web socket");
+                setTimeout(initWebSocket, 3000);
+            }
+        }
+
+        function handler_web_socket_msg(msg){
+            const {type, data} = msg;
+
+            switch(type){
+                case "new_bid":
+                    OFFER.value = bid.amount;
+                    break;
+
+                default:
+                    console.log("mensaje no encontrado");
+                    break;
+            }
         }
 
     </script>
