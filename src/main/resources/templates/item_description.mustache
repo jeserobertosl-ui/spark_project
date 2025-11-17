@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Item {{id}}</title>
+</head>
+<body>
+    <h1>{{name}} - ${{price}} USD</h1>
+    <p>{{description}}</p>
+
+    <button><a href="/new_bid/{{id}}">Bid</a></button>
+    <button><a href="/items">Return</a></button>
+
+    <div>
+        <table>
+            <tr>
+                <td>ID</td>
+                <td>Email</td>
+                <td>Item ID</td>
+                <td>Amount</td>
+            </tr>
+
+            {{#bids}}
+                <tr>
+                    <td>{{id}}</td>
+                    <td>{{email}}</td>
+                    <td>{{item_id}}</td>
+                    <td>{{amount}}</td>
+                </tr>
+            {{/bids}}
+        </table>
+    </div>
+</body>
+</html>

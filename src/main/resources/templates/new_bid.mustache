@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Post Bid</title>
+</head>
+<body>
+    <form id="toilet">
+        <label for="txt_offer">Offer</label><br>
+        <input type="number" id="txt_offer" name="txt_offer"><br>
+
+        <label for="txt_email">Email</label><br>
+        <input type="email" id="txt_email" name="txt_email"><br>
+
+        <button type="submit" onclick="redirect()">SUBMIT</button>
+
+    </form>
+    <script>
+        let OFFER = document.getElementById("txt_offer");
+
+    document.getElementById("toilet").addEventListener("click", function(event){
+      event.preventDefault()
+    });
+
+    function redirect()
+    {
+        const EMAIL = document.getElementById("txt_email");
+        const ITEM_ID = {{item_id}};
+
+            const URL =
+            "/post_bid/" + EMAIL.value +
+            "/" + ITEM_ID +
+            "/" + OFFER.value;
+
+            console.log(URL);
+
+
+            window.location = URL;
+        }
+
+        const WS_URL = "ws://localhost:8080/ws/bid";
+
+        let socket;
+
+        function initWebSocket() {
+            socket = new WebSocket(WS_URL);
+
+            socket.onopen = () => {
+                console.log("Conectado al servidor WebSocket");
+            };
+
+            socket.onerror = (error) => {
+                console.log("error al conectar con el web socket");
+            }
+
+            socket.onmessage = (event) => {
+                const MSG = JSON.parse(event.data);
+
+                handler_web_socket_msg(MSG);
+
+                console.log("On Message: ");
+                console.log(MSG);
+            }
+
+            socket.onclose = () => {
+                console.log("reiniciando web socket");
+                setTimeout(initWebSocket, 3000);
+            }
+        }
+
+        function handler_web_socket_msg(msg){
+            const {type, data} = msg;
+
+            switch(type){
+                case "new_bid":
+                    OFFER.value = bid.amount;
+                    break;
+
+                default:
+                    console.log("mensaje no encontrado");
+                    break;
+            }
+        }
+
+    </script>
+</body>
+
+
+
+</html>
