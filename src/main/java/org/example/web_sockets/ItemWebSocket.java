@@ -7,14 +7,11 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.example.item.Item;
-import org.example.offer.Bid;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
-
-import static org.example.Main.items;
 
 @WebSocket
 public class ItemWebSocket {
@@ -31,14 +28,12 @@ public class ItemWebSocket {
     @OnWebSocketClose
     public void closed(Session _session, int _statusCode, String _reason) {
         sessions.remove(_session);
-
-        System.out.println("removed session");
     }
 
     @OnWebSocketMessage
     public void message(Session _session, String _message) throws IOException {
         System.out.println("Got: " + _message);   // Print message
-        _session.getRemote().sendString("Este string se envia desde @OnWebSocketMessage"); // and send it back
+        _session.getRemote().sendString(_message); // and send it back
     }
 
     private static void send_to_session(Session session, String message) {
@@ -72,25 +67,8 @@ public class ItemWebSocket {
         WebSocketMessage msg = new WebSocketMessage(
             "new_item",
             "new item added",
-            Map.of("item", item)
+                Map.of("item", item)
         );
-
-        System.out.println("item added");
-
-        broadcast_to_all(msg);
-    }
-
-    public static void broadcast_new_price(Bid _bid)
-    {
-        WebSocketMessage msg = new WebSocketMessage(
-                "new_bid",
-                "new bid added",
-                Map.of("bid", _bid)
-        );
-
-        items.get(_bid.getItem_id()).setPrice(_bid.getAmount());
-
-        System.out.println("bid added");
 
         broadcast_to_all(msg);
     }

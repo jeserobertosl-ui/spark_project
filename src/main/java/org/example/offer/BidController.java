@@ -1,7 +1,6 @@
 package org.example.offer;
 
 import org.example.utils.Path;
-import org.example.web_sockets.ItemWebSocket;
 import spark.ModelAndView;
 import spark.Route;
 import spark.template.mustache.MustacheTemplateEngine;
@@ -71,7 +70,6 @@ public class BidController {
 
         Bid bid = new Bid(id, email, item_id, amount);
         bids.add(bid);
-        ItemWebSocket.broadcast_new_price(bid);
 
         return new MustacheTemplateEngine().render(
             new ModelAndView(

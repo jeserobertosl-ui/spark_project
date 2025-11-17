@@ -1,4 +1,4 @@
-package org.example;
+package org.example.user;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,16 +38,15 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
-    
+
+
+
     public static List<User> defaul_values()
     {
         List<User> users = new ArrayList<>();
-        users.add(new User(1, "Juan", "juan@email.com"));
-        users.add(new User(users.size() + 1, "Pedro", "pedro@email.com"));
-        users.add(new User(users.size() + 1, "Marcos", "marcos@email.com"));
-        users.add(new User(users.size() + 1, "Manuel", "manuel@email.com"));
-        users.add(new User(users.size() + 1, "Fabian", "fabian@email.com"));
-        users.add(new User(users.size() + 1, "Carlos", "carlos@email.com"));
+        users.add(new User(1, "Mario Treviño", "mario@aroundthelab.edu"));
+        users.add(new User(2, "Lisa heiss", "lisa@aroundthelab.com"));
+        users.add(new User(3, "Frida Sernas", "frida@aroundthelab.com"));
 
         return users;
     }
@@ -60,5 +59,14 @@ public class User {
             }
         }
         return -1;
+    }
+
+    public static boolean user_id_exists(List<User> _users, int _id){
+        for (User user : _users) {
+            if (user.getId() == _id) {
+                return true;
+            }
+        }
+        return false;
     }
 }
